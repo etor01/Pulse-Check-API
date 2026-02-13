@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/etor01/Pulse-Check-API#readme",
   "dependencies": {
+    "body-parser": "^2.2.2",
     "express": "^5.2.1"
   }
 }
