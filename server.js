@@ -1,20 +1,103 @@
-const express = require("express");
+const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 5050;
 
-app.listen(PORT, ()=>{
-    console.log(`Watchdog started successfully on port ${PORT}`);
+app.use(bodyParser.json());
 
-    setInterval(()=>{
-        console.log('alive')
-    }, 1000)
-})
+//In memory store for device. Structure{device_id: { timeout, alert_email, status, timerObj }}
+const monitors = {};
 
-//the API accepts a POST/monitors request -->this is creating a monitor | if timer exists , log already exist.Use another id
-//->{"id": "device-123", "timeout": 60}
-//the systems starts a count down timer for new device=
-//201 Created response returned
+//The pulse
+const triggerAlert = (id) => {
+    monitors[id].status = 'down';
+    console.log(JSON.stringify({
+        ALERT: `Device ${id} is down!`,
+        time: new Date().toISOString(),
+        email_sent_to: 'admin@critmon.com'
+    }, null, 2));
+};
+
+// USER STORY 1: Register a device  /monitors
+app.post('/monitors', (req, res) => {
+    const { id, timeout, alert_email } = req.body;
+    //input validation to prevent ghost device
+    if (!id || !timeout) {
+        return res.status(400).json({ error: "Missing id or timeout" });
+    }
+    //prevent duplicates monitors
+    if (id===monitors.id){
+        return res.status(409).json({ error: "ID Conflict, Device already exist"})
+    }
+
+    monitors[id] = {
+        timerDone: false,
+        timeout,
+        alert_email,
+        status: 'active',
+        // start countdown immediately
+        timerObj: setTimeout(() => {
+            triggerAlert(id)
+            timerDone=true;
+        }, timeout * 1000)
+    };
+
+    res.status(201).json({ message: `Monitor for ${id} started at :(${timeout}s)` });
+});
+
+
+//USER STORY 2: The heartbeat  //monitors/${id}/heartbeat
+app.post(`/monitors/${id}/heartbeat`, (req, res) => {
+    const { id } = req.params;
+    const monitor = monitors[id];
+    const status = monitors[status];
+
+    if (id===monitor && status==='active') {
+        clearTimeout(monitors[id].timerObj);
+        return res.status(200).json(` Ok. Monitor for ${id} exists, Timer restarts: (${timeout}s)`);
+    }
+
+    if (!monitor) {
+        return res.status(404).json({ error: "Monitor not found" });
+    }
+
+    if (id===monitor && status === 'down') {
+        console.log(JSON.stringify({
+            INFO: `Device ${id} is back online!`,
+            time: new Date().toISOString()
+        }, null, 2));
+    }
+
+    // Reset logic
+    clearTimeout(monitor.timerObj);
+    monitor.status = 'active';
+    monitor.timerObj = setTimeout(() => triggerAlert(id), monitor.timeout * 1000);
+
+    res.status(200).json({ message: "Heartbeat received. Timer reset." });
+});
+
+//USER STORY 3:
+setInterval(()=>{
+  console.log(222);
+  
+}, 1000)
+
+app.post('/monitors/:id/pause', (req, res) => {
+    const { id } = req.params;
+    const monitor = monitors[id];
+
+    if (!monitor) return res.status(404).json({ error: "Monitor not found" });
+
+    clearTimeout(monitor.timerObj);
+    monitor.status = 'paused';
+
+    res.status(200).json({ message: `Monitoring for ${id} paused.` });
+});
+
+app.listen(PORT, () => {
+    console.log(`Watchdog Sentinel active on port ${PORT}`);
+});
 
 
 //API accepts a POST/monitors/{id}/heartbeat request
@@ -31,7 +114,6 @@ app.listen(PORT, ()=>{
 /*
 ENDPOINTS
 
-1.  POST/monitors   ||LOG AND RETURN DEVICE ID AND CREATED MSG
 2.  POST/monitors/{id}/heartbeat request    ||Check if monitor exists and returns okay or not found/when device paused [status is down] will restart device
 3.  POST/monitors/{id}/pause        || Sets the status of the monitor to pause and stops the the timer. 
 
