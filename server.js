@@ -48,7 +48,7 @@ app.post('/monitors', (req, res) => {
 
 
 //USER STORY 2: The heartbeat  //monitors/${id}/heartbeat
-app.post(`/monitors/${id}/heartbeat`, (req, res) => {
+app.post(`/monitors/:id/heartbeat`, (req, res) => {
     const { id } = req.params;
     const monitor = monitors[id];
     const status = monitors[status];
@@ -123,6 +123,31 @@ Architecture Diagram
 Setup Instructions
 API Documentation
 The Developer's Choice: Explanation of your added feature.
+
+
+---
+config:
+  theme: redux-color
+---
+
+sequenceDiagram
+    rect rgb(255,255,255)
+    participant Alice as Monitor Devices
+    participant John as WatchDog
+    participant Admin
+    autonumber
+    Admin->>John: [Post] Creates a Monitor
+    Admin-->>Alice: [Set]Monitor mode - pause / unpause
+    Alice->>John: [Post] Pulse / 60s
+    rect rgb(250,250,200)
+        John->>John: 1. Listen and logs pulse <br/> 2. Reset monitor timer when <br/> pulse signal is recieved
+    end
+    Note right of John: Backend / API
+    John-->>Alice: ?Status
+    John-->>Admin: [WebHook] Critical Alert
+    John->>Admin: Logs Monitors status
+    end
+
 
 
 */
