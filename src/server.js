@@ -8,9 +8,7 @@ import startWatchdog from "./services/watchdogService.js";
 const app = express();
 app.use(express.json());
 app.use("/api", monitorRoutes);
-
 app.get("/", (req, res) => res.json({ message: "Pulse-Check-API is running" }));
-
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5050;
