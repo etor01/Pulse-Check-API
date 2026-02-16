@@ -30,7 +30,7 @@ Stores monitor state persistently, including last heartbeat time and timeout con
 A periodic asynchronous process that evaluates monitor state and detects timeout violations.
 
 - ##### Alert Mechanism (Simulated)
-When a monitor expires, the system logs a structured alert. In production, this would trigger an email or webhook.
+When a monitor expires, the system logs a structured alert.
 
 ---
 
