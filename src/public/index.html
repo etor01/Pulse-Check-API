@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pulse-Check-API | WatchDog Sentinel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #0f172a;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #cbd5e1;
+        }
+
+        section {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            border-left: 5px solid #2563eb;
+            padding-left: 10px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #e2e8f0;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Pulse-Check-API</h1>
+    <p>Dead Man's Switch Monitoring System (WatchDog Sentinel)</p>
+    <p style="color:limegreen; margin:0px; padding: 0px;">To test out the endpoints, use read the docs below</p>
+</header>
+
+<section>
+    <h2>About the Application</h2>
+    <div class="card">
+        <p>
+            Pulse-Check-API is a backend monitoring service designed to track remote infrastructure devices 
+            operating in unreliable network environments.
+        </p>
+        <p>
+            Devices register with the system and must periodically send heartbeat signals.
+            If a heartbeat is not received before the configured timeout expires, the system automatically
+            triggers an alert and marks the device as <strong>down</strong>.
+        </p>
+        <p>
+            Built using <strong>Node.js, MongoDB</strong> and <strong>Express</strong>, this system demonstrates
+            stateful timer management and failure detection logic.
+        </p>
+    </div>
+</section>
+
+<section>
+    <h2>How It Works</h2>
+    <div class="card">
+        <ol>
+            <li>An administrator registers a monitor.</li>
+            <li>The system starts a countdown timer.</li>
+            <li>The device sends heartbeat signals.</li>
+            <li>Each heartbeat resets the timer.</li>
+            <li>If the timer expires, an alert is triggered.</li>
+        </ol>
+    </div>
+</section>
+
+<section>
+    <h2>API Documentation</h2>
+
+    <div class="card">
+        <h3>1. Register Monitor</h3>
+        <p><strong>POST</strong> <code>/api/monitors</code></p>
+
+        <p>Creates a new monitor and starts its timer.</p>
+
+        <pre>
+{
+  "id": "device-123",
+  "timeout": 60,
+  "alert_email": "admin@critmon.com"
+}
+        </pre>
+
+        <p><strong>Response:</strong> 201 Created</p>
+    </div>
+
+    <div class="card">
+        <h3>2. Send Heartbeat</h3>
+        <p><strong>POST</strong> <code>/api/monitors/:id/heartbeat</code></p>
+
+        <p>
+            Resets the countdown timer. If the monitor does not exist,
+            returns 404 Not Found.
+        </p>
+
+        <p><strong>Response:</strong> 200 OK</p>
+    </div>
+
+    <div class="card">
+        <h3>3. Pause Monitoring</h3>
+        <p><strong>POST</strong> <code>/api/monitors/:id/pause</code></p>
+
+        <p>
+            Stops the timer and prevents alerts from firing.
+            Sending a heartbeat automatically resumes monitoring.
+        </p>
+
+        <p><strong>Response:</strong> 200 OK</p>
+    </div>
+
+    <div class="card">
+        <h3>4. Get Monitor Status</h3>
+        <p><strong>GET</strong> <code>/api/monitors/:id</code></p>
+
+        <p>Returns the current state of a monitor.</p>
+
+        <pre>
+{
+  "id": "device-123",
+  "timeout": 60,
+  "status": "up",
+  "paused": false
+}
+        </pre>
+
+        <p><strong>Response:</strong> 200 OK</p>
+    </div>
+</section>
+
+<section>
+    <h2>Alert Behavior</h2>
+    <div class="card">
+        <p>
+            If no heartbeat is received before timeout expiration,
+            the system logs:
+        </p>
+
+        <pre>
+{
+  "ALERT": "Device device-123 is down!",
+  "time": "2026-02-14T12:00:00.000Z"
+}
+        </pre>
+
+        <p>
+            The monitor status is updated to <strong>down</strong>.
+        </p>
+    </div>
+</section>
+
+<footer>
+   Etornam Kordzo Ahiataku  <a href="https://github.com/etor01/Pulse-Check-API">etor01/Pulse API</a>
+</footer>
+
+</body>
+</html>
