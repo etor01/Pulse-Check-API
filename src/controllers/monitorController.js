@@ -117,3 +117,32 @@ export const getStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+//Endpoin to return a list of all the devices
+export const getDevices = async (req, res, next) => {
+  try {
+    const monitors = await Monitor.find();
+    if (!monitors || monitors.length === 0) {
+      return res.status(404).json({ message: "No Monitors were found on the server" });
+    }
+
+    const now = Date.now();
+    const devices = monitors.map(m => {
+      let timeRemaining = null;
+      if (m.status === "up") {
+        const elapsed = (now - new Date(m.lastHeartbeat).getTime()) / 1000;
+        timeRemaining = Math.max(0, m.timeout - Math.floor(elapsed));
+      }
+      return {
+        deviceId: m.deviceId,
+        status: m.status,
+        timeRemaining
+      };
+    });
+
+    res.json({ devices });
+
+  } catch (error) {
+    next(error);
+  }
+};

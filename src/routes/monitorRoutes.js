@@ -3,7 +3,8 @@ import {
   createMonitor,
   heartbeat,
   pauseMonitor,
-  getStatus
+  getStatus,
+  getDevices
 } from "../controllers/monitorController.js";
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.post("/monitors", createMonitor);  //creating a new monitor
 router.post("/monitors/:id/heartbeat", heartbeat); //sending a heartbeat for a monitor
 router.post("/monitors/:id/pause", pauseMonitor); //setting a monitor heartbeat to paused
 router.get("/monitors/:id/status", getStatus); //getting the status of a monitor (up, down, paused) 
+router.get("/monitors", getDevices); // getting all monitoring devices in the server
 
 export default router;
