@@ -136,6 +136,7 @@ other endpoints available are;
 - send Heartbeat  ```POST /api/monitors/:id/heartbeat ```
 - pause Monittor heartbeat  ```POST /api/monitors/:id/pause ```
 - get Monitor status  ```GET /api/monitors/:id/status ``` 
+- get all monitoring devices ```Get /api/monitors ```
 
 ---
 ### Failure Detecture Logic

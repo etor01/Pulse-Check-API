@@ -174,6 +174,37 @@
 
         <p><strong>Response:</strong> 200 OK</p>
     </div>
+
+    <div class="card">
+        <h3>5. Get all Monitoring devices</h3>
+        <p><strong>GET</strong> <code>/api/monitors</code></p>
+
+        <p>Returns a json object of all the deploy monitoring devices</p>
+
+        <pre>
+{
+  "devices": [
+    {
+      "deviceId": "device-123",
+      "status": "paused",
+      "timeRemaining": null
+    },
+    {
+      "deviceId": "device-133",
+      "status": "down",
+      "timeRemaining": null
+    },
+    {
+      "deviceId": "device-143",
+      "status": "down",
+      "timeRemaining": null
+    }
+  ]
+}
+        </pre>
+
+        <p><strong>Response:</strong> 200 OK</p>
+    </div>
 </section>
 
 <section>
