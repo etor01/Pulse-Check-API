@@ -1,6 +1,7 @@
 # Pulse-Check-API (Watchdog Sentinel)
 
 ## Overview
+
 Pulse-Check-API is a Dead Man’s Switch backend service designed to monitor remote infrastructure devices operating in unreliable or low-connectivity environments.
 
 Each device registers a monitor with a configured timeout. The device must periodically send heartbeat signals to confirm it is still operational. If the system does not receive a heartbeat within the expected interval, the device is automatically marked as down and an alert is triggered.
@@ -8,6 +9,7 @@ Each device registers a monitor with a configured timeout. The device must perio
 This system models real-world infrastructure monitoring scenarios such as solar farms, weather stations, and remote IoT installations where device failure must be detected reliably without manual intervention.
 
 ## Problem Context
+
 CritMon Servers Inc. monitors critical infrastructure devices deployed in remote areas. These devices are expected to send periodic “I am alive” signals.
 
 The key challenge is detecting device failure automatically when those signals stop.
@@ -18,19 +20,24 @@ This project implements that logic in a reliable, restart-safe backend service t
 ---
 
 ## Architecture Overview
+
 The system consists of four main components:
 
-- ##### Express API
+- ### Express API
+
 Handles monitor registration, heartbeat processing, pause functionality, and status inspection.
 
-- ##### MongoDB (Source of Truth)
+- ### MongoDB (Source of Truth)
+  
 Stores monitor state persistently, including last heartbeat time and timeout configuration. This ensures system state survives server restarts.
 
-- ##### Watchdog Background Service
+- ### Watchdog Background Service
+  
 A periodic asynchronous process that evaluates monitor state and detects timeout violations.
 
-- ##### Alert Mechanism (Simulated)
-When a monitor expires, the system logs a structured alert.
+- ### Alert Mechanism (`console logs`)
+  
+When a monitor expires, the system logs a structured alert in the console. Implementation of hooks for email alerts to admins could be add later.
 
 ---
 
@@ -44,15 +51,14 @@ Instead, this system stores all timing state in MongoDB and evaluates expiration
 
 This provides:
 
-* Restart safety
-* Persistence
-* Horizontal scalability readiness
-* Operational reliability
+- Restart safety
+- Persistence
+- Horizontal scalability readiness
+- Operational reliability
 
 The database acts as the source of truth.
 Timeout expiration is derived from:
 lastHeartbeat + timeout
-
 
 ---
 
@@ -81,23 +87,26 @@ sequenceDiagram
     end
 ```
 
-
 ---
+
 ## Monitor Lifecycle
 
 A monitor can exist in one of three states:
 
-* UP
+- UP
 The device is sending heartbeats within the timeout window.
-* DOWN
+- DOWN
 The device has exceeded the timeout without sending a heartbeat.
-* PAUSED
+- PAUSED
 Monitoring is temporarily suspended. No alerts will trigger.
 
- ##### State transitions occur automatically based on heartbeat activity or pause commands.
+### State transitions occur automatically based on heartbeat activity or pause commands
+
 ---
+
 ### Project Structure
-```
+
+``` bash
 pulse-check-api/
 │
 ├── src/
@@ -114,59 +123,73 @@ pulse-check-api/
 ├── package.json
 └── README.md
 ```
-##### This structure separates concerns clearly:
+
+#### This structure separates concerns clearly
+
 - Controllers handle request logic
 - Models define data structure
 - Services handle background processing
 - Middleware handles cross-cutting concerns
 - Routes define API endpoints
 - Public/index - simple frontend for docs.
+  
 ---
-##### List of API endpoints:
+
+##### List of API endpoints
+
 ###### Create a Monitor (POST /api/monitors/)
+
 - sample data to pass in below:
-```
+  
+``` json
 {
   "id": "device-123",
   "timeout": 60,
   "alert_email": "admin@example.com"
 }
 ```
+
 other endpoints available are;
-- send Heartbeat  ```POST /api/monitors/:id/heartbeat ```
-- pause Monittor heartbeat  ```POST /api/monitors/:id/pause ```
-- get Monitor status  ```GET /api/monitors/:id/status ``` 
-- get all monitoring devices ```Get /api/monitors ```
+
+- send Heartbeat  ```POST /api/monitors/:id/heartbeat```
+- pause Monittor heartbeat  ```POST /api/monitors/:id/pause```
+- get Monitor status  ```GET /api/monitors/:id/status```
+- get all monitoring devices ```Get /api/monitors```
+- delete a monitor  ```DELETE /api/monitors/:id/delete```
 
 ---
+
 ### Failure Detecture Logic
-- The watchdog service runs in a loop, listening for monitors elapsedTime (can be changed by admin) 
-  ``` elapsedTime = currentTime - lastHeartBeat```
-  if ```elapsedTime > timeout ``` then
-  - ``` monitor.status = down```  => ``` alert is triggered```
+
+- The watchdog service runs in a loop, listening for monitors elapsedTime (can be changed by admin)
+  ```elapsedTime = currentTime - lastHeartBeat```
+  if ```elapsedTime > timeout``` then
+
+  - ```monitor.status = down```  => ```alert is triggered```
+  
 ---
 
-## How to Run Locally 
+## How to Run Locally
 
 ### 1. Clone Repository
 
-```
+``` bach
 git clone https://github.com/yourusername/pulse-check-api.git
 cd pulse-check-api
 ```
 
 ### 2. Install Dependencies
 
-```
+``` bash
 npm install
 ```
 
 ### 3. Configure Environment
 
 Create a `.env` file:
-Create a database collection on Mongo DB and copy your URI into the local ```.env``` file. 
+Create a database collection on Mongo DB and copy your URI into the local ```.env``` file.
 
-```
+``` bash
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 ```
@@ -175,23 +198,23 @@ MONGO_URI=your_mongodb_connection_string
 
 Development:
 
-```
+``` bash
 npm run dev
 ```
 
-
 ---
+
 ## Developer’s Choice Feature
 
-#### Status Endpoint
+### Status Endpoint
 
 Added `GET /monitors/:id/status`.
 
 Reason:
 Improves observability and operational debugging. This allows operators to inspect monitor state and remaining time without accessing the database directly.
 
-
 #### Conclusions
+
 This implementation is restart-safe because all state is stored in MongoDB.
 Potential production improvements include:
 
@@ -199,6 +222,7 @@ Potential production improvements include:
 - `Authentication and API key support`
 - `Rate limiting`
 - `Monitoring and observability integration`
+  
 ---
 
 ## Deployment Recommendation
@@ -210,8 +234,8 @@ This API can be deployed easily on most platforms, render was used to host it on
 3. Create new Web Service on Render
 4. Add environment variables
 5. Deploy and Test it out.
-   
   
 ### Author
-` Etornam Kordo Ahiataku`
+
+`Etornam Kordo Ahiataku`
 `GitHub:` [Live Demo](https://pulse-check-api.onrender.com/)
