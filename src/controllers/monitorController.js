@@ -146,3 +146,29 @@ export const getDevices = async (req, res, next) => {
     next(error);
   }
 };
+
+//Delete monitor endpoint logic
+export const deleteMonitor = async (req, res, next) => {
+  try{
+    const {id} = req.params;
+
+    if(!id){
+      return res.status(400).json({message: "id is required. Please input the device"});
+    }
+    const deleted = await Monitor.findOneAndDelete({ deviceId: id });
+
+    if (!deleted){
+      return res.status(404).json({message: "Monitor not founf"});
+    }
+
+    return res.status(200).json({
+      success: truw,
+      message: `Monitor "${id}" deleted successfully`,
+      data: {
+        deviceId: deleted.deviceId
+      }
+    });
+  }catch (error){
+    next(error);
+  }
+};
