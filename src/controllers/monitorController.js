@@ -162,8 +162,8 @@ export const deleteMonitor = async (req, res, next) => {
     }
 
     return res.status(200).json({
-      success: truw,
-      message: `Monitor "${id}" deleted successfully`,
+      success: true,
+      message: `Monitor deleted successfully`,
       data: {
         deviceId: deleted.deviceId
       }

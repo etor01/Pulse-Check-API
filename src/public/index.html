@@ -115,7 +115,7 @@
 
 <section>
     <h2>API Documentation</h2>
-
+<!--Add a monitor card-->
     <div class="card">
         <h3>1. Register Monitor</h3>
         <p><strong>POST</strong> <code>/api/monitors</code></p>
@@ -132,7 +132,7 @@
 
         <p><strong>Response:</strong> 201 Created</p>
     </div>
-
+<!--Send a heartbeat card-->
     <div class="card">
         <h3>2. Send Heartbeat</h3>
         <p><strong>POST</strong> <code>/api/monitors/:id/heartbeat</code></p>
@@ -144,7 +144,7 @@
 
         <p><strong>Response:</strong> 200 OK</p>
     </div>
-
+<!--Pause heartbeat card-->
     <div class="card">
         <h3>3. Pause Monitoring</h3>
         <p><strong>POST</strong> <code>/api/monitors/:id/pause</code></p>
@@ -156,7 +156,7 @@
 
         <p><strong>Response:</strong> 200 OK</p>
     </div>
-
+<!--Get monitor status card-->
     <div class="card">
         <h3>4. Get Monitor Status</h3>
         <p><strong>GET</strong> <code>/api/monitors/:id/status</code></p>
@@ -173,7 +173,7 @@
 
         <p><strong>Response:</strong> 200 OK</p>
     </div>
-
+<!--Get status of monitoring devices card-->
     <div class="card">
         <h3>5. Get all Monitoring devices</h3>
         <p><strong>GET</strong> <code>/api/monitors</code></p>
@@ -204,6 +204,26 @@
 
         <p><strong>Response:</strong> 200 OK</p>
     </div>
+<!--Delete a monitor card-->
+    <div class="card">
+            <h3>5. Delete a Monitor</h3>
+            <p><strong>DELETE</strong> <code>/api/monitors/:id/delete</code></p>
+
+            <p>Returns confirmation msg that monitor </p>
+
+            <pre>
+{
+    "success": true,
+    "message": "Monitor deleted successfully",
+    "data": {
+                "deviceId": "device-143"
+            }
+}
+        </pre>
+
+        <p><strong>Response:</strong> 200 OK</p>
+    </div>
+
 </section>
 
 <section>
