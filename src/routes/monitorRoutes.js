@@ -16,6 +16,6 @@ router.post("/monitors/:id/heartbeat", heartbeat);         //sending a heartbeat
 router.post("/monitors/:id/pause", pauseMonitor);          //setting a monitor heartbeat to paused
 router.get("/monitors/:id/status", getStatus);             //getting the status of a monitor (up, down, paused) 
 router.get("/monitors", getDevices);                       //getting  all monitoring devices in the server
-router.delete("/monitors/:id", deleteMonitor);             //deleting a monitor 
+router.delete("/monitors/:id/delete", deleteMonitor);             //deleting a monitor 
 
 export default router;
